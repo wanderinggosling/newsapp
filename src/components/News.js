@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
 import PropTypes from 'prop-types'
-
+import loader from "../loading.gif"
 
 export class News extends Component {
     static defaultProps={
@@ -20,7 +20,7 @@ export class News extends Component {
         super();
         this.state = {
             articles: this.articles,
-            loading: false,
+            loading: true,
             page: 1
         }
     }
@@ -31,7 +31,7 @@ export class News extends Component {
         let data = await fetch(url);
         let parsedData = await data.json();
         console.log(parsedData);
-        this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults })
+        this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults,loading:false })
     }
 
     handlePrevClick = async () => {
@@ -42,7 +42,7 @@ export class News extends Component {
         console.log(parsedData);
         this.setState({ articles: parsedData.articles })
         this.setState({
-            page: this.state.page - 1
+            page: this.state.page - 1,
         })
     }
     handleNextClick = async () => {
@@ -53,18 +53,21 @@ export class News extends Component {
             console.log(parsedData);
             this.setState({ articles: parsedData.articles })
             this.setState({
-                page: this.state.page + 1
+                page: this.state.page + 1,
             })
     }
     render() {
         return (
             <div className='container my-3'>
                 <h1 className="text-center">News -Top headlines</h1>
-              
+                <div className="center">
+                {this.state.loading &&<img className="rounded mx-auto d-block" src={loader} alt="" />}
+                </div>
+               
                 <div className="row">
                     {this.state.articles.map((element) => {
                         return <div className="col-md-4" key={element.url}>
-                            <NewsItem title={element.title.slice(0, 45)} description={element.description ? element.description.slice(0, 88) : ""} imageUrl={element.urlToImage ? element.urlToImage : "https://media.hotnews.ro/media_server1/image-2022-06-23-25637907-0-masini-tesla.jpg"} redirect={element.url}></NewsItem>
+                            <NewsItem title={element.title} description={element.description ? element.description.slice(0, 88) : ""} imageUrl={element.urlToImage ? element.urlToImage : "https://media.hotnews.ro/media_server1/image-2022-06-23-25637907-0-masini-tesla.jpg"} redirect={element.url} publishedAt={element.publishedAt.slice(0,10)}></NewsItem>
                         </div>
                     })}
                 </div>
